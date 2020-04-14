@@ -49,6 +49,8 @@ import {
 const ESC_KEY_CODE = 27;
 
 const ListView = React.createClass({
+
+	
 	contextTypes: {
 		router: React.PropTypes.object.isRequired,
 	},
@@ -283,6 +285,7 @@ const ListView = React.createClass({
 		const items = this.props.items;
 		const {autocreate, nocreate, plural, singular} = this.props.currentList;
 
+		
 		return (
 			<Container style={{paddingTop: '2em'}}>
 				<ListHeaderTitle
@@ -323,7 +326,7 @@ const ListView = React.createClass({
 					)}
 
 					// columns
-					columnsActive={this.props.active.columns}
+					columnsActive={this.getAuthorizedItems()}
 					columnsAvailable={this.props.currentList.columns}
 				/>
 				<ListFilters
@@ -481,6 +484,29 @@ const ListView = React.createClass({
 			</Container>
 		);
 	},
+	getAuthorizedItems(){
+		const activeItems = this.props.active.columns.filter(column=>{
+
+			if( (typeof column.rules === 'function') || (typeof column.rules === 'object') ){
+				if(column.rules.access){
+					if(column.rules.access.includes(Keystone.userAuthorization)){
+						return true;
+					}
+					else{
+						return false;
+					}
+				}
+				else{
+					return true;
+				}
+			}
+			else{
+				return true;
+			}
+		});
+
+		return activeItems;
+	},
 	renderActiveState() {
 		if (this.showBlankState()) return null;
 
@@ -493,6 +519,9 @@ const ListView = React.createClass({
 		if (!this.state.constrainTableWidth) {
 			containerStyle.maxWidth = '100%';
 		}
+
+		
+
 		return (
 			<div>
 				{this.renderHeader()}
@@ -523,7 +552,7 @@ const ListView = React.createClass({
 								activeSort={this.props.active.sort}
 								checkedItems={this.state.checkedItems}
 								checkTableItem={this.checkTableItem}
-								columns={this.props.active.columns}
+								columns={this.getAuthorizedItems()}
 								deleteTableItem={this.deleteTableItem}
 								handleSortSelect={this.handleSortSelect}
 								items={this.props.items}

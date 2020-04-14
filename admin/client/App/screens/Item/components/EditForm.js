@@ -238,12 +238,47 @@ var EditForm = React.createClass({
 			);
 		}
 	},
+	isAuthorizedToViewItem(el){
+
+		var field = this.props.list.fields[el.field];
+		try {
+			if(field){
+				if(field.rules.access){
+					if(field.rules.access.includes(Keystone.userAuthorization)){
+						return true;
+					}
+					else{
+						return false;
+					}
+				}
+				else{
+					return true;
+				}
+			}
+			else{
+				return true;
+			}
+		}
+		catch(err) {
+			console.log(err)
+			return false;
+		}
+	},
 	renderFormElements () {
 		var headings = 0;
+
+		
+
 
 		return this.props.list.uiElements.map((el, index) => {
 			// Don't render the name field if it is the header since it'll be rendered in BIG above
 			// the list. (see renderNameField method, this is the reverse check of the one it does)
+
+			const isAuthorizedToView = this.isAuthorizedToViewItem(el);
+
+			if(!isAuthorizedToView)
+				return null;
+
 			if (
 				this.props.list.nameField
 				&& el.field === this.props.list.nameField.path
