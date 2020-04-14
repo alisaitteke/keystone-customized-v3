@@ -487,7 +487,7 @@ const ListView = React.createClass({
 	getAuthorizedItems(){
 		const activeItems = this.props.active.columns.filter(column=>{
 
-			if( (typeof column.rules === 'function') || (typeof column.rules === 'object') ){
+			try{
 				if(column.rules.access){
 					if(column.rules.access.includes(Keystone.userAuthorization)){
 						return true;
@@ -500,9 +500,11 @@ const ListView = React.createClass({
 					return true;
 				}
 			}
-			else{
+			catch(err){
+				console.log(err)
 				return true;
 			}
+		
 		});
 
 		return activeItems;
