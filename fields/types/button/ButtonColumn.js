@@ -13,7 +13,6 @@ var ButtonColumn = React.createClass({
 		linkTo: React.PropTypes.string,
 	},
 	getInitialState() {
-		console.log('SERHAN', this);
 		return {
 			loading: false,
 			state_confirm: false,
