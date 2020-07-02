@@ -1,9 +1,17 @@
 var async = require('async');
 var assign = require('object-assign');
 var listToArray = require('list-to-array');
+var MongoClient = require('mongodb').MongoClient;
+var env = require('dotenv').config();
+const configJson = require('../../../../../../config.json');
+Object.keys(configJson).forEach(function (k) {
+    process.env[k] = configJson[k];
+});
 
 
 module.exports = function (req, res) {
+
+	
 	var where = {};
 	var fields = req.query.fields;
 	var includeCount = req.query.count !== 'false';
@@ -42,7 +50,7 @@ module.exports = function (req, res) {
 	}
 
 
-	// console.log(req.query)
+	 
 	if (req.query.search) {
 		assign(where, req.list.addSearchToQuery(req.query.search));
 	}
@@ -75,11 +83,49 @@ module.exports = function (req, res) {
 			if (sort.string) {
 				query.sort(sort.string);
 			}
-			query.exec(function (err, items) {
-				next(err, count, items);
-			});
+			let amountSum = {};
+
+			  var url = process.env.MONGODB_URI;
+
+			  if(req.query.fields.indexOf(',amount,')>0) {
+
+			  MongoClient.connect(url, function(err, db) {
+				
+				var collection = db.collection('transactions');
+
+				collection.aggregate([
+					{ $match: { state: "approved" } },
+					{
+						$group: {
+							_id: null,
+							'totalAmount': { $sum: '$amount' }
+					  }
+					}
+				  ],	  
+				  function(err, results) {
+					if(!err){
+						console.log(results)
+						amountSum =results;
+					}
+
+					query.exec(function (err, items) {
+						next(err, count, items, amountSum);
+					});
+
+					db.close();
+				  });
+			  });
+			}
+			else{
+				query.exec(function (err, items) {
+					next(err, count, items, amountSum);
+				});
+			}
+			  
+			  
+			
 		},
-	], function (err, count, items) {
+	], function (err, count, items, amountSum) {
 		if (err) {
 			res.logError('admin/server/api/list/get', 'database error finding items', err);
 			return res.apiError('database error', err);
@@ -94,6 +140,7 @@ module.exports = function (req, res) {
 			count: includeCount
 				? count
 				: undefined,
+			amountSum : amountSum,
 		});
 	});
 };

@@ -296,6 +296,7 @@ const ListView = React.createClass({
 						${numeral(items.count).format()}
 						${pluralize(items.count, ' ' + singular, ' ' + plural)}
 					`}
+					amountSum={items.amountSum}
 				/>
 				<ListHeaderToolbar
 					// common

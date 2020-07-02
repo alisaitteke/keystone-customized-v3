@@ -49,8 +49,18 @@ module.exports = function (req, res, next) {
 					// add keys from all items to an array and explicitly provided
 					// the complete set to baby.unparse() below
 					Object.keys(row).forEach(function (i) {
+
 						if (fields.indexOf(i) === -1) fields.push(i);
 					});
+
+					//Developed by SU in order to format amount...
+					data.forEach(element => {
+						if(element.amount){
+							element.amount = element.amount.replace(',','');
+						}
+					});
+
+
 					return row;
 				});
 				res.attachment(req.list.path + '-' + moment().format('YYYYMMDD-HHMMSS') + '.csv');

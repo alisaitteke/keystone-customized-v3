@@ -9,16 +9,30 @@ function ListHeaderTitle ({
 	availableColumns,
 	handleSortSelect,
 	title,
+	amountSum,
 	...props
 }) {
+	
+	console.log(amountSum);
+
+	let totalAmount = null;
+
+	if(amountSum[0]!=null){
+		totalAmount = <span style={{fontSize:"15px"}}><br/>Total Approved Amount is <b style={{color:"#1385e5"}}>{amountSum[0].totalAmount}</b> TL.</span>
+	}
+	
 	return (
 		<h2 className={css(classes.heading)} {...props}>
-			{title}
+
+			
+			{title} 
 			<ListSort
 				activeSort={activeSort}
 				availableColumns={availableColumns}
 				handleSortSelect={handleSortSelect}
 			/>
+			{totalAmount}
+
 		</h2>
 	);
 };
