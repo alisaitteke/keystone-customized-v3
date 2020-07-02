@@ -18,7 +18,7 @@ function ListHeaderTitle ({
 	let totalAmount = null;
 
 	if(amountSum[0]!=null){
-		totalAmount = <span style={{fontSize:"15px"}}><br/>Total Approved Amount is <b style={{color:"#1385e5"}}>{amountSum[0].totalAmount}</b> TL.</span>
+		totalAmount = <span style={{fontSize:"15px"}}><br/>Total Approved Amount is <b style={{color:"#1385e5"}}>{amountSum[0].totalAmount.toFixed(2)}</b> TL.</span>
 	}
 	
 	return (

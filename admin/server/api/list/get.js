@@ -87,34 +87,41 @@ module.exports = function (req, res) {
 
 			  var url = process.env.MONGODB_URI;
 
-			  if(req.query.fields.indexOf(',amount,')>0) {
+			if(req.query.fields!=null){
+			  	if(req.query.fields.indexOf(',amount,')>0) {
 
-			  MongoClient.connect(url, function(err, db) {
-				
-				var collection = db.collection('transactions');
+					MongoClient.connect(url, function(err, db) {
+					
+					var collection = db.collection('transactions');
 
-				collection.aggregate([
-					{ $match: { state: "approved" } },
-					{
-						$group: {
-							_id: null,
-							'totalAmount': { $sum: '$amount' }
-					  }
-					}
-				  ],	  
-				  function(err, results) {
-					if(!err){
-						console.log(results)
-						amountSum =results;
-					}
+					collection.aggregate([
+						{ $match: { state: "approved" } },
+						{
+							$group: {
+								_id: null,
+								'totalAmount': { $sum: '$amount' }
+						}
+						}
+					],	  
+					function(err, results) {
+						if(!err){
+							console.log(results)
+							amountSum =results;
+						}
 
+						query.exec(function (err, items) {
+							next(err, count, items, amountSum);
+						});
+
+						db.close();
+					});
+					});		
+				}
+				else{
 					query.exec(function (err, items) {
 						next(err, count, items, amountSum);
 					});
-
-					db.close();
-				  });
-			  });
+				}		
 			}
 			else{
 				query.exec(function (err, items) {
