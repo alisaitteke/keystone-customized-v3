@@ -58,10 +58,10 @@ module.exports = function (req, res, next) {
 				//Developed by SU in order to format amount...
 					data.forEach(element => {
 						if(element.amount){
-							element.amount = element.amount.replace(',','');
+							element.amount = element.amount.replace(/,/g, '');
 						}
 						if(element["remaining_limits.amount"]){
-							element["remaining_limits.amount"]= element["remaining_limits.amount"].replace(',','');
+							element["remaining_limits.amount"]= element["remaining_limits.amount"].replace(/,/g, '');
 						}
 					});
 				
