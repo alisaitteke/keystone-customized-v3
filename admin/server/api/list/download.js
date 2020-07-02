@@ -60,6 +60,9 @@ module.exports = function (req, res, next) {
 						if(element.amount){
 							element.amount = element.amount.replace(',','');
 						}
+						if(element["remaining_limits.amount"]){
+							element["remaining_limits.amount"]= element["remaining_limits.amount"].replace(',','');
+						}
 					});
 				
 				res.attachment(req.list.path + '-' + moment().format('YYYYMMDD-HHMMSS') + '.csv');
