@@ -105,7 +105,6 @@ module.exports = function (req, res) {
 					],	  
 					function(err, results) {
 						if(!err){
-							console.log(results)
 							amountSum =results;
 						}
 
