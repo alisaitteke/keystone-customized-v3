@@ -52,17 +52,16 @@ module.exports = function (req, res, next) {
 
 						if (fields.indexOf(i) === -1) fields.push(i);
 					});
-
-					//Developed by SU in order to format amount...
+					return row;
+				});
+				
+				//Developed by SU in order to format amount...
 					data.forEach(element => {
 						if(element.amount){
 							element.amount = element.amount.replace(',','');
 						}
 					});
-
-
-					return row;
-				});
+				
 				res.attachment(req.list.path + '-' + moment().format('YYYYMMDD-HHMMSS') + '.csv');
 				res.setHeader('Content-Type', 'application/octet-stream');
 				var content = baby.unparse({
