@@ -5,13 +5,13 @@ var MongoClient = require('mongodb').MongoClient;
 var env = require('dotenv').config();
 const configJson = require('../../../../../../config.json');
 Object.keys(configJson).forEach(function (k) {
-    process.env[k] = configJson[k];
+	process.env[k] = configJson[k];
 });
 
 
 module.exports = function (req, res) {
 
-	
+
 	var where = {};
 	var fields = req.query.fields;
 	var includeCount = req.query.count !== 'false';
@@ -24,7 +24,7 @@ module.exports = function (req, res) {
 			fields = listToArray(fields);
 		}
 		if (fields && !Array.isArray(fields)) {
-			return res.status(401).json({error: 'fields must be undefined, a string, or an array'});
+			return res.status(401).json({ error: 'fields must be undefined, a string, or an array' });
 		}
 	}
 	if (req.list.get('queryFilter')) {
@@ -50,7 +50,6 @@ module.exports = function (req, res) {
 	}
 
 
-	 
 	if (req.query.search) {
 		assign(where, req.list.addSearchToQuery(req.query.search));
 	}
@@ -85,51 +84,13 @@ module.exports = function (req, res) {
 			}
 			let amountSum = {};
 
-			  var url = process.env.MONGODB_URI;
+			// var url = process.env.MONGODB_URI;
 
-			if(req.query.fields!=null){
-			  	if(req.query.fields.indexOf(',amount,')>0) {
+			query.exec(function (err, items) {
+				next(err, count, items, amountSum);
+			});
 
-					MongoClient.connect(url, function(err, db) {
-					
-					var collection = db.collection('transactions');
 
-					collection.aggregate([
-						{ $match: { state: "approved" } },
-						{
-							$group: {
-								_id: null,
-								'totalAmount': { $sum: '$amount' }
-						}
-						}
-					],	  
-					function(err, results) {
-						if(!err){
-							amountSum =results;
-						}
-
-						query.exec(function (err, items) {
-							next(err, count, items, amountSum);
-						});
-
-						db.close();
-					});
-					});		
-				}
-				else{
-					query.exec(function (err, items) {
-						next(err, count, items, amountSum);
-					});
-				}		
-			}
-			else{
-				query.exec(function (err, items) {
-					next(err, count, items, amountSum);
-				});
-			}
-			  
-			  
-			
 		},
 	], function (err, count, items, amountSum) {
 		if (err) {
@@ -146,7 +107,7 @@ module.exports = function (req, res) {
 			count: includeCount
 				? count
 				: undefined,
-			amountSum : amountSum,
+			amountSum: amountSum,
 		});
 	});
 };
